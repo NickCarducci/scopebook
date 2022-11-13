@@ -11,23 +11,30 @@ const optsForPouchDB = {
   revs_limit: 1, //revision-history
   auto_compaction: true //zipped...
 }; //const deletion = (d, db) => db.remove(d).catch(standardCatch);
+//layoffs will make deflation,
+//better products will get ayoffs (technologsts do t seek m0ore problems)
+//i'll take a mudpie to a non deflationary job and I will have ONE apple pie.
+//A RECESSION IS A fall of shrinkflation, benefits from essential institutions, and layoffs
+//if the economy settled would be property, what is the dollar vs bond
+//machine rent is how capital wedges labor
 class ADB {
-  constructor(name) {
+  constructor() {
     PouchDB.plugin(upsert);
     const title = "meAuth";
     this.db = new PouchDB(title, optsForPouchDB);
-  }
+  } //layoffs will make deflation, ill
   destroy = () =>
     this.db
       .destroy()
       .then(function () {
+        console.log("destroy");
         PouchDB.plugin(upsert);
         const title = "meAuth";
         this.db = new PouchDB(title, optsForPouchDB);
       })
-      .catch(standardCatch);
+      .catch(standardCatch); //conservative margins: layoffs, uniformity, more
   store = async (bloc) => {
-    console.log("store");
+    console.log("store", bloc);
     const sbloc = JSON.stringify(bloc);
     if (!bloc._id)
       return window.alert("pouchdb needs ._id key:value: JSON.parse= " + sbloc); //has upsert plugin from class constructor
@@ -42,14 +49,16 @@ class ADB {
   };
   remove = async (key) => {
     console.log("remove");
-    if (!key._id)
+    /*if (!key._id)
       window.alert(
         "pouchdb needs ._id key:value: JSON.parse= " + JSON.parse(key)
-      ) && this.destroy();
+      ) && this.destroy();*/
     return await this.db
-      .get(key._id)
+      .get(key)
+      //.then(async (r) => await JSON.parse(r))
       .then(async (key) => {
-        return await this.db.remove(key);
+        console.log(key);
+        return await this.db.remove(key).catch((e) => this.destroy());
       })
       .catch(standardCatch);
   }; //has upsert plugin from class constructor
@@ -57,44 +66,68 @@ class ADB {
     return await this.db /*read*/
       .allDocs({ include_docs: true })
       .then(async (allNotes) => {
-        const p = (n) => JSON.stringify((notes[n.doc.key] = n.doc));
-        const a = async (v) => await new Promise((r) => r(p(v)));
-        await Promise.all(allNotes.rows.map(a));
+        const p = (n) => (notes[n.doc.key] = n.doc.proactiveRefresh);
+        const a = async (v) =>
+          await new Promise((r) => {
+            const pv = p(v);
+            //console.log(pv);
+            r(JSON.stringify(pv));
+          });
+        return await Promise.all(allNotes.rows.map(a));
       })
-      .catch(standardCatch); //new Promise cannot handle JSON objects, Promise.all() doesn't
+      .catch((e) => this.destroy()); //new Promise cannot handle JSON objects, Promise.all() doesn't
   }; // && and .then() are functionally the same;
 }
 
 class PromptAuth extends React.Component {
   constructor(props) {
     super(props);
+    const adb = new ADB();
     this.state = {
-      adb: new ADB()
+      adb
     };
   }
   componentDidMount = () => {
     this.state.adb
       .readAuth()
-      .then((r) => {
-        if (!r) return null; //console.log(k, k.proactiveRefresh.user); //when anonymous, too
-        const k = JSON.parse(r[0]); //if (k.proactiveRefresh) this.state.adb["remove"](k.uid)  setFireAuth({})
+      //.then(async (r) => await JSON.parse(r[0]))
+      .then((r) => r[0])
+      .then(async (r) => {
+        console.log(r);
+        if (r.constructor === Array) return r;
+        if (r) return await JSON.parse(r);
+      })
+      .then((read) => {
+        //console.log(read);
+        if (read.constructor === Array) return null; //console.log(k, k.proactiveRefresh.user); //when anonymous, too
+        //const read = JSON.parse(r[0]); //if (k.proactiveRefresh) this.state.adb["remove"](k.uid)  setFireAuth({})
+        /*this.setState({ authe: read.user }, () => {
+          //console.log(this.state.authe);
+          this.props.setFireAuth(
+            Object.keys(this.state.authe).reduce((copy, key) => {
+              console.log(copy);
+              return this.state.authe[key];
+            })
+          );
+        });*/
 
-        const read = r ? k.proactiveRefresh.user : {};
-        this.props.setFireAuth(read);
+        //const read = r ? k.proactiveRefresh.user : {};
+
+        this.props.setFireAuth((window[this.props.windowKey] = read.user));
+        //console.log(window[this.props.windowKey]);
         //storedAuth.multiFactor = JSON.parse(storedAuth.multiFactor);
         this.props.verbose &&
           console.log(
-            `REACT-LOCAL-FIREBASE: ${
+            `REACT-LOCAL-FIREBASE(pouchdb): ${
               !read
                 ? "no user stored..."
-                : read.isAnonymous
+                : read.user.isAnonymous
                 ? "authdb is anonymous"
-                : read._id !== "none"
-                ? "authdb is identifiable"
-                : "new authdb"
-            }`,
-            read && `: ` + Object.keys(read).filter((x) => read[x])
-          );
+                : //: read._id !== "none"?
+                  "is identifiable"
+            }` + (read ? `: ` : ""),
+            read.user
+          ); // + Object.keys(read.user).filter((x) => read[x])
       })
       .catch((err) => console.log(err));
   };
@@ -188,6 +221,7 @@ class PromptAuth extends React.Component {
           );
         }
       );
+    //console.log(this.state.authe);
     return (
       <div style={this.props.style}>
         <div
@@ -222,10 +256,10 @@ class PromptAuth extends React.Component {
         <div
           ref={this.props.ra} //resetAuth
           onClick={() => {
-            this.props.onStart();
-            if (!meAuth.id) return; //hoistAuth({}, true, true); //payload, reload, all-but-denied permission
+            //this.props.onStart();
+            if (!meAuth.uid) return; //hoistAuth({}, true, true); //payload, reload, all-but-denied permission
             this.state.adb["remove"](meAuth.uid) //_id
-              .then((res) => setFireAuth({}, true, "isStored"))
+              .then((res) => setFireAuth({})) //, true, "isStored"))
               .catch(standardCatch); //when anonymous, too  //if (res) this.props.onFinish(); //res.isAnonymous
           }}
         />
