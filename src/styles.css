@@ -1,0 +1,62 @@
+* {
+  margin: 0;
+}
+html {
+  background-color: rgb(226, 220, 211);
+}
+input {
+  text-align: right;
+  max-width: 100px;
+}
+
+@keyframes ticker-tape-scrolling {
+  0% {
+    left: 0%;
+  }
+  100% {
+    opacity: 0.5;
+    left: -100%;
+  }
+}
+@keyframes emptyanim {
+}
+
+.ticker-tape {
+  transition: 0.3s ease-in;
+  width: 100%;
+  height: 100%;
+  margin: 0 auto 0;
+  overflow: hidden;
+}
+
+.ticker-tape .ticker-tape-collection {
+  width: 100%;
+  margin-right: 10px;
+  display: flex;
+  position: relative;
+  height: 100%;
+  animation: ticker-tape-scrolling 5.2s linear infinite running;
+}
+.ticker-tape:not(:hover) .ticker-tape-collection {
+  animation: emptyanim;
+  animation-play-state: paused;
+}
+
+.ticker-tape .ticker-tape-story {
+  display: inline-block;
+  vertical-align: top;
+  line-height: 2.5rem;
+}
+
+.ticker-tape .ticker-tape-story:after {
+  overflow: hidden;
+  text-indent: 0rem;
+  font-size: 0;
+  line-height: 0;
+  content: "line after";
+  display: inline-block;
+  height: 1.875rem;
+  margin-bottom: 0.1875rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+  vertical-align: middle;
+}
