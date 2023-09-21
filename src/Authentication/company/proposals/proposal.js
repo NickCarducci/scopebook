@@ -26,97 +26,7 @@ import { standardCatch } from "../../Sudo.js";
 
 //collective action does not limit non-respondents
 //same spending withot the Affont
-class Price extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      cost: props.proposal.cost
-    };
-  }
-  render() {
-    const { proposal } = this.props;
-    return (
-      <div
-        style={{
-          display: "flex",
-          position: "absolute",
-          right: "0px",
-          borderRadius: "8px",
-          borderBottomRightRadius: "0px",
-          padding: "10px",
-          paddingBottom: "0px",
-          backgroundColor: "rgb(0,0,20)",
-          width: "max-content",
-          textAlign: "left"
-        }}
-      >
-        <span
-          onClick={() =>
-            this.props.isAdmin &&
-            this.setState({ changeCost: !this.state.changeCost })
-          }
-          style={{
-            WebkitTextStroke: ".3px black",
-            color: "rgb(20,140,80)",
-            backgroundColor: "rgb(175, 140, 90)"
-          }}
-        >
-          $
-        </span>
-        {!this.state.changeCost ? (
-          <div
-            style={{ color: "white" }}
-            onClick={() =>
-              this.props.isAdmin && this.setState({ changeCost: true })
-            }
-          >
-            {proposal.cost}
-          </div>
-        ) : (
-          this.props.isAdmin && (
-            <form
-              onSubmit={(w) => {
-                w.preventDefault();
-                if (this.state.cost === "")
-                  return this.setState({ changeCost: false });
-                const answer = window.confirm(
-                  "the cost for " +
-                    proposal.name +
-                    " is " +
-                    this.state.cost +
-                    "?"
-                );
-                answer &&
-                  updateDoc(doc(firestore, "proposals", proposal.id), {
-                    cost: this.state.cost
-                  });
-                this.setState({ changeCost: false });
-              }}
-            >
-              <input
-                maxLength={8}
-                type="number"
-                style={{ width: "100%", maxWidth: "50px" }}
-                value={this.state.cost}
-                placeholder="cost"
-                //defaultValue={this.state.cost}
-                id="cost"
-                onChange={(proposal) =>
-                  this.setState({
-                    [proposal.target.id]: proposal.target.value.slice(
-                      0,
-                      proposal.target.maxLength
-                    )
-                  })
-                }
-              />
-            </form>
-          )
-        )}
-      </div>
-    );
-  }
-}
+
 const firestore = getFirestore(firebase);
 class Proposal extends React.Component {
   constructor(props) {
@@ -125,7 +35,8 @@ class Proposal extends React.Component {
       willCall: props.proposal.willCall,
       author: { name: "" },
       newRequest: { name: "" },
-      fetchingComments: null
+      fetchingComments: null,
+      cost: props.proposal.cost
     }; //CF_CF_API_KEY: ${{ secrets.CF_API_KEY }} wrangler dev &&
     /*this.immediateStyle = {};
     for (let i = 0; i < 250; i++) {
@@ -230,6 +141,12 @@ class Proposal extends React.Component {
       <div
         style={{
           position: "relative",
+          borderRadius: "0px",
+          borderTopLeftRadius: "14px",
+          borderTopRightRadius: "4px",
+          border: "4px solid rgb(120,90,80)",
+          borderRight: "0px solid",
+          borderBottom: "0px solid",
           backgroundColor: this.props.newlymodified ? "rgba(0,0,20,.6)" : "",
           width: "min-content",
           minWidth: "170px",
@@ -242,25 +159,6 @@ class Proposal extends React.Component {
           }s ease-in`
         }}
       >
-        <Price proposal={proposal} isAdmin={this.props.isAdmin} />
-        {this.props.isAdmin && (
-          <div
-            style={{
-              borderTop: "1px solid",
-
-              padding: "5px",
-              color: "black",
-              left: "0px",
-              width: "max-content",
-              position: "relative",
-              textAlign: "left" //an NBER recession is an efficient labor market (less work more expense)
-              //proof of admission
-              //Does the natural marginal affectation on revenue not depend on budget constraints of the individual or otherwise a non-expiring and competitive commodity collective?
-            }}
-          >
-            {this.state.author.username}
-          </div>
-        )}
         <div style={{ width: "100%", display: "flex" }}>
           <span
             onClick={() => {
@@ -285,6 +183,8 @@ class Proposal extends React.Component {
               left: "-3px",
               //position: "absolute",
               display: "block",
+              borderRadius: "10px",
+              border: `1.5px solid ${proposal.willCall ? "black" : ""}`,
               backgroundColor: `rgb(${tone + 20},${tone + 40},${tone + 90})`
             }}
           >
@@ -522,67 +422,10 @@ class Proposal extends React.Component {
             </div>
           </form>
         )}
-        {proposal.willCall !== 0 && (
-          <div
-            style={{
-              height: "26px",
-              position: "relative",
-              width: `100%`
-            }}
-          >
-            <div
-              style={{
-                fontSize: "8px",
-                //border: "2px solid",
-                position: "absolute",
-                height: "10px",
-                width: "100%"
-              }}
-            >
-              {
-                //Math.round(daysLeft, 2)} days left
-              }
-            </div>
-            {/**get to the choppa euh i love it when yu talk like that (mark as unpaid?????) */}
-            <div
-              style={{
-                fontSize: "8px",
-                border: "2px solid transparent",
-                height: "10px",
-                backgroundColor: "rgb(50,100,230)",
-                width: `calc(100% * ${daysLeft / longer} - 4px)`
-              }}
-            />
-
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  fontSize: "8px",
-                  //border: "2px solid",
-                  position: "absolute",
-                  height: "10px",
-                  width: "100%"
-                }}
-              >
-                {
-                  //Math.round(daysSpent, 2)} days spent
-                }
-              </div>
-            </div>
-            <div
-              style={{
-                border: "2px solid transparent",
-                height: "10px",
-                backgroundColor: "rgb(30,50,80)",
-                width: `calc(100% * ${daysSpent / longer} - 4px)`
-              }}
-            />
-          </div>
-        )}
         <div
           style={{
-            backgroundColor: "rgba(40,40,40,.3)",
-            //color: "rgb(140,210,190)",
+            backgroundColor: "dimgrey",
+            color: "rgb(180,230,200)",
             width: "100%",
             position: "relative"
           }}
@@ -595,12 +438,7 @@ class Proposal extends React.Component {
               )}
             </div>
           )}
-          {proposal.paidAt ? (
-            <span style={{ fontSize: "12px" }}>
-              {Math.round(daysLeft, 2)} days left: {Math.round(daysSpent, 2)}{" "}
-              days spent
-            </span>
-          ) : (
+          {!proposal.paidAt && (
             <span style={{ fontSize: "12px" }}>
               {this.props.isAdmin ? "your " : "in "}review
             </span>
@@ -633,6 +471,60 @@ class Proposal extends React.Component {
           >
             &#9650;
           </span>
+          {proposal.willCall !== 0 && (
+            <div
+              style={{
+                overflow: "hidden",
+                height: "26px",
+                position: "relative",
+                width: `100%`
+              }}
+            >
+              <div
+                style={{
+                  fontSize: "8px",
+                  //border: "2px solid",
+                  position: "absolute",
+                  height: "10px",
+                  width: "100%"
+                }}
+              >
+                {Math.round(daysLeft, 2)} days left
+              </div>
+              {/**get to the choppa euh i love it when yu talk like that (mark as unpaid?????) */}
+              <div
+                style={{
+                  fontSize: "8px",
+                  border: "2px solid transparent",
+                  height: "10px",
+                  backgroundColor: "rgb(50,100,230)",
+                  width: `calc(100% * ${daysLeft / longer})`
+                }}
+              />
+
+              <div style={{ position: "relative" }}>
+                <div
+                  style={{
+                    fontSize: "8px",
+                    //border: "2px solid",
+                    position: "absolute",
+                    height: "10px",
+                    width: "100%"
+                  }}
+                >
+                  {Math.round(daysSpent, 2)} days spent
+                </div>
+              </div>
+              <div
+                style={{
+                  border: "2px solid transparent",
+                  height: "10px",
+                  backgroundColor: "rgb(30,50,80)",
+                  width: `calc(100% * ${daysSpent / longer})`
+                }}
+              />
+            </div>
+          )}
         </div>
         {/*<div
           style={{
@@ -785,6 +677,100 @@ class Proposal extends React.Component {
               proposal={proposal}
             />
           )}
+          <div
+            style={{
+              display: "flex",
+              position: "absolute",
+              right: "0px",
+              borderRadius: "8px",
+              borderBottomRightRadius: "0px",
+              padding: "10px",
+              paddingBottom: "0px",
+              backgroundColor: "rgb(0,0,20)",
+              width: "max-content",
+              textAlign: "left"
+            }}
+          >
+            <span
+              onClick={() =>
+                this.props.isAdmin &&
+                this.setState({ changeCost: !this.state.changeCost })
+              }
+              style={{
+                WebkitTextStroke: ".3px black",
+                color: "rgb(20,140,80)",
+                backgroundColor: "rgb(175, 140, 90)"
+              }}
+            >
+              $
+            </span>
+            {proposal.cost && !this.state.changeCost ? (
+              <div
+                style={{ color: "white" }}
+                onClick={() =>
+                  this.props.isAdmin && this.setState({ changeCost: true })
+                }
+              >
+                {proposal.cost}
+              </div>
+            ) : (
+              this.props.isAdmin && (
+                <form
+                  onSubmit={(w) => {
+                    w.preventDefault();
+                    if (this.state.cost === "")
+                      return this.setState({ changeCost: false });
+                    const answer = window.confirm(
+                      "the cost for " +
+                        proposal.name +
+                        " is " +
+                        this.state.cost +
+                        "?"
+                    );
+                    answer &&
+                      updateDoc(doc(firestore, "proposals", proposal.id), {
+                        cost: this.state.cost
+                      });
+                    this.setState({ changeCost: false });
+                  }}
+                >
+                  <input
+                    maxLength={8}
+                    type="number"
+                    style={{ width: "100%", maxWidth: "50px" }}
+                    value={this.state.cost}
+                    placeholder="cost"
+                    //defaultValue={this.state.cost}
+                    id="cost"
+                    onChange={(proposal) =>
+                      this.setState({
+                        [proposal.target.id]: proposal.target.value.slice(
+                          0,
+                          proposal.target.maxLength
+                        )
+                      })
+                    }
+                  />
+                </form>
+              )
+            )}
+          </div>
+          {this.props.isAdmin && (
+            <div
+              style={{
+                padding: "5px",
+                color: "black",
+                width: "100%",
+                left: `calc(-100% + 70px)`,
+                position: "relative",
+                textAlign: "right" //an NBER recession is an efficient labor market (less work more expense)
+                //proof of admission
+                //Does the natural marginal affectation on revenue not depend on budget constraints of the individual or otherwise a non-expiring and competitive commodity collective?
+              }}
+            >
+              {this.state.author.username}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -819,3 +805,4 @@ style={{
 }}
 />
  */
+
