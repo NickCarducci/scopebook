@@ -34,7 +34,6 @@ export default class Authentication extends React.Component {
     this.pa = React.createRef();
     this.gui = React.createRef();
     this.ra = React.createRef();
-    this.FIREBASE_PHONE_recaptcha = React.createRef();
   }
   openTask = () => {};
   componentDidMount = () => {
@@ -328,6 +327,7 @@ export default class Authentication extends React.Component {
                 FIREBASE_MULTI: this.FIREBASE_MULTI
               }
             }}
+            phoneNumberCollection={"phoneNumbers"}
             multiCallback={() => {
               console.log("multi click");
               this.FIREBASE_MULTI.current.click();
