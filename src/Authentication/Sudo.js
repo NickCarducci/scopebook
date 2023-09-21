@@ -497,7 +497,8 @@ class FIREBASE_SUDO extends React.Component {
               this.showRecaptcha(); //this.renderRecaptcha();
               console.log("user exists, here's the FIREBASE_PHONE_recaptcha");
             }
-          }
+          },
+          (e) => console.log(e)
         );
       }
     ); // && this.setState({ warnCaptcha: true })
@@ -585,9 +586,6 @@ class FIREBASE_SUDO extends React.Component {
             fontSize: !this.props.onroot ? "0px" : "",
             //zIndex: 9,
             //this.props.backgroundColor
-            backgroundColor:
-              // ? this.props.backgroundColor
-              this.props.onroot ? "rgba(20,20,20,.7)" : "",
             width: "100%",
             transform: `translate(${
               this.props.onroot ? 0 : -this.props.width
@@ -651,7 +649,6 @@ class FIREBASE_SUDO extends React.Component {
                   : "" //this.props.auth!==undefined.sausageadmin
               }}
             >
-              (
               <span
                 style={{
                   cursor: "pointer",
@@ -986,3 +983,4 @@ export default React.forwardRef((props, ref) => (
       }}*/
 //{...props}/>
 //});
+
