@@ -137,7 +137,7 @@ export default class Company extends React.Component {
             >
               <input
                 state={this.state.newRequest.name}
-                placeholder="name"
+                placeholder="new project name"
                 id="name"
                 onChange={(e) =>
                   this.setState({
