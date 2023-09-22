@@ -119,7 +119,8 @@ class Search extends React.Component {
               cursor: "pointer"
             })}
           >
-            What is the name of the company you would like to contract?
+            What is the name of the company you would like to contract (i.e.
+            "example")?
           </h4>
         )}
         {!viewCompany && !viewCompanyOk && (
